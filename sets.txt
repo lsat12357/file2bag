@@ -1,0 +1,61 @@
+rockyshore93	1993 ODFW Oregon Rocky Shore Aerial Photography Survey
+african-ephemera	African Political Ephemera and Realia Project
+album-collection	The Album Collection
+angelus-studio	The Angelus Studio photograph collection, 1880s-1940s
+aa-images	Art and Architecture Images
+aa-images	University of Oregon. Libraries. Art & Architecture Images, Archivision.
+artists-books	University of Oregon Libraries. Artists' Books
+braceros	Braceros in Oregon Photograph Collection
+building-or	Building Oregon: Architecture of Oregon & the Pacific Northwest
+cw-furlong	The Charles W. Furlong collection, 1895-1965
+clarence-andrews	The Clarence L. Andrews collection, 1805-1948
+dan-powell	The Dan Powell Photograph Collection
+dissociation	University of Oregon Libraries. Dissociation and Trauma Archives.
+doris-ulmann	University of Oregon. Libraries. Doris Ulmann Photographs.
+electric-studio	The Electric Studio/O.G. Allen collection, ca. 1911-1913
+fairbanks	The Fairbanks Fine Arts Print Collection
+gwilliams	Gerald W. Williams Collection
+gb-warner	The Gertrude Bass Warner Collection, 1903-1929
+gifford	Gifford Photographic Collection
+grayson-mathews	Grayson Mathews
+sheetmusic	Historic Sheet Music
+james-cloutier	The James Cloutier Collection
+jasr	University of Oregon Libraries. Japanese American Student Relocation.
+john-bauguess	The John Bauguess Photograph Collection
+schnitzer-mofa	Jordan Schnitzer Museum of Art
+lee-drake	The Lee D. Drake collection, ca. 1910-1957
+mountaingrove	University of Oregon Libraries. Ruth Mountaingrove Photographs
+lowenstam	Lowenstam Collection
+lee-moorhouse	The Major Lee Moorhouse Photograph Collection
+mss-rb	Manuscripts and Rare Books
+middle-east-water	The Middle East Water Collection
+maic	University of Oregon Libraries. Mongolian Altai Inventory Image Collection.
+nw-folklife	Northwest Folklife Digital Collection
+oimb	OIMB Slides Digital Collection
+osu-baseball	OSU Baseball Centennial
+herbarium	The OSU Herbarium Type Specimens Collection
+osu-scarc	OSU Special Collections and Archives Research Center
+daily-emerald	University of Oregon. Libraries. Oregon Daily Emerald Archives.
+oregon-explorer	Oregon Explorer
+ohba	Oregon Hops and Brewing Archives
+or-latino-herit	University of Oregon. Libraries. Oregon Latino Heritage.
+ormaps	Oregon Maps
+oregon-multicultural-archives	Oregon Multicultural Archives
+osu-yearbooks	Oregon State University Yearbooks
+streamsurvey	Pacific Northwest Stream Survey
+percent-for-art	University of Oregon. Libraries. Oregon Public Percent for Art Digital Collection.
+petrarch	Petrarch
+moorhouse	University of Oregon. Libraries. Picturing the Cayuse, Walla Walla, and Umatilla Tribes.
+rv-mills	The Randall V. Mills Photograph Collection
+corvallis-flood	Rising Flood Waters: 1964 Corvallis
+roy-c-andrews	The Roy C. Andrews collection, 1902-1955
+siuslaw	The Siuslaw National Forest Collection
+texts-data	Texts and Data
+tribal-legacies	Tribal Legacies
+uo-arch-photos	University of Oregon. Libraries. University Archives Photograph Selections.
+uo-athletics	University of Oregon Libraries. UO Athletics.
+uo-president	University of Oregon. Libraries. University of Oregon Office of the President
+uo-stock-photos	University of Oregon Stock Photos
+uo-veterans	University of Oregon. Libraries. University of Oregon Veterans.
+walter-bowman	The Walter S. Bowman collection, 1890-1925
+western-waters	University of Oregon. Libraries. Western Waters Digital Library.

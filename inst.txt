@@ -1,0 +1,22 @@
+Instructions for using tdv2bag
+
+create mapping if necessary in f2b.yml. The order of the predicates must follow the column order from the spreadsheet. It is important to follow the format exactly, including indents and spacing, otherwise the script will fail. 
+
+save spreadsheet as a tab-delimited txt file, the filename must begin with the coll name as it appears in the .yml, separate this coll name from the rest of the name with an underscore.
+For example uo-athletics_2006-10.txt
+
+make sure the text file has encoding UTF-8 and unix line-endings
+
+open a terminal, cd to file2bag
+./file2bag -s -m f2b.yml path-to-text.txt path-to-images-dir path-to-bags
+
+notes regarding the arguments: 
+The first path is the text file. 
+The second path is somewhat optional; if not included, the bagging script will generate the bags without the images.
+The third path is optional; default location for the bags is in file2bag/bags. The script will automatically generate a top directory named after the collection (eg uo-athletics), and then write the bags to that directory. Rename or move this directory (eg uo-athletics-WBB2014-01-15) before running additional bags, or the script will err.
+
+After bagging: 
+tar, transfer to lib-hydra1.library.oregonstate.edu:/data1/batch, untar
+check permissions (directories should be 775, files should be 664)
+go into oregondigital.org/bulk_tasks, find the dir you uploaded (eg uo-athletics-WBB2014-01-15) and click ingest.
+

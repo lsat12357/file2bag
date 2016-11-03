@@ -1,0 +1,6 @@
+bags
+*.cpd
+test*
+logfile.log
+.DS_Store
+.ruby-version
