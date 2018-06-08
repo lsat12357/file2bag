@@ -1,0 +1,97 @@
+
+vocabularies:
+
+  oregondigital.org/resource:
+    before: http
+    after: /oregondigital:[a-z0-9-]+
+
+  opaquenamespace.org/ns:
+    before: http
+    after: /[A-Za-z0-9-]+
+    vocabs:
+      - accessRestrictions
+      - cdwa
+      - class
+      - commonNames
+      - creator
+      - culture
+      - DLCDsubject
+      - genus
+      - georss
+      - localCollectionName
+      - rights
+      - people
+      - phylum
+      - publisher
+      - repository
+      - seriesName
+      - stylePeriod
+      - subject
+      - technique
+      - workType
+
+  oregondigital.org/u:
+    before: http
+    after: ?[a-z-]+,[0-9]+
+
+  id.loc.gov/authorities:
+    before: http
+    after: /[a-z0-9]+
+    vocabs:
+      - names
+      - subjects
+
+  id.loc.gov/vocabulary:
+    before: http
+    after: /[a-z0-9]+
+    vocabs:
+      - ethnographicTerms
+      - organizations
+      - graphicMaterials
+
+  vocab.getty.edu:
+    before: http
+    after: /[0-9]+
+    vocabs:
+      - aat
+      - ulan
+      - tgn
+
+  creativecommons.org:
+    before: http
+    after: /[a-z-]+/[0-9.]+/
+    vocabs:
+      - licenses
+      - publicdomain
+
+  purl.org/dc/dcmitype:
+    before: http
+    after: /[A-Za-z]+
+
+  rs.tdwg.org/dwc/terms:
+    before: http
+    after: /[A-Za-z]+
+
+  sws.geonames.org:
+    before: http
+    after: /[0-9]+/
+
+  ubio.org/authority/metadata.php?lsid=urn:lsid:ubio.org:namebank:
+    before: http
+    after: :[0-9]+
+
+  itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value:
+    before: https
+    after: =[0-9]+
+
+  w3id.org/spar/mediatype:
+    before: https
+    after: /[a-z]+/[a-z]+
+
+  dbpedia.org/resource:
+    before: http
+    after: /[A-Za-z0-9_]+
+
+  www.wikidata.org/wiki/entity:
+    before: https
+    after: /[A-Z0-9]+
