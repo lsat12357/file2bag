@@ -1,0 +1,34 @@
+FROM ubuntu:12.04
+
+#to build, docker build --rm -t file2bag -f Dockerfile-dev .
+#to run, docker run -v ~/file2bag:/home/dsc-dev/file2bag -it file2bag
+#if more directories need to be mapped, eg dirs with images, add additional: -v path-to-dir:/home/dsc-dev/dir
+
+RUN apt-get update
+RUN apt-get install -y  git sudo curl wget automake build-essential cmake pkg-config libssl-dev libreadline-dev
+
+RUN git clone https://github.com/sstephenson/rbenv.git /usr/local/rbenv
+ENV PATH /usr/local/rbenv/shims:/usr/local/rbenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV RBENV_ROOT /usr/local/rbenv
+# install ruby-build
+RUN mkdir /usr/local/rbenv/plugins
+RUN git clone https://github.com/sstephenson/ruby-build.git /usr/local/rbenv/plugins/ruby-build
+RUN rbenv rehash
+
+# Set to Ruby 2.1.2
+RUN rbenv install 2.1.2
+RUN rbenv rehash
+RUN rbenv global 2.1.2
+
+RUN useradd -ms /bin/bash dsc-dev
+ENV WORK_PATH /home/dsc-dev/file2bag
+#RUN cd / && git clone --depth 1 https://github.com/lsat12357/file2bag.git $INSTALLL_PATH
+
+RUN gem install bundler
+COPY Gemfile /Gemfile
+COPY Gemfile.lock /Gemfile.lock
+RUN bundle install
+
+WORKDIR $WORK_PATH
+RUN chown -R dsc-dev $WORK_PATH
+USER dsc-dev

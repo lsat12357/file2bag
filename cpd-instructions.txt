@@ -1,64 +1,14 @@
 to use cpd printer script:
-export metadata sheet to tab-delim .txt, check utf and line endings
+export metadata sheet to tab-delimited text file
+file must have encoding UTF-8 and unix line-endings
 this script only cares about the first three cols, which should be:
 dmrec TAB filename TAB title TAB ...
 
-Save in printcpds folder
-
-open a terminal, cd to printcpds directory, enter command:
-php print_cpds.php metadatafilename.txt
-
-for example 
-php print_cpds.php testcpdprinter.txt
+to run: php print_cpds.php metadatafilename.txt
 
 the script should print the .cpds and put them in the current directory;
-move the .cpds to the directory where the children are- the collection folder with 
-the digital items.
+move the .cpds to the directory containing the rest of the content files (images, pdfs, etc)
 
 ready to bag!
 
-bag the images and metadata:
-open a terminal 
-cd /Users/Shared/cdm2bag-master 
-./tdv2bag -s -m tdv.yml path-to-filename path-to-images-dir path-to-bags 
-[Example: ./tdv2bag -s -m tdv.yml /Users/lib-uberscan/uo_ath_jcs/
-uo-athletics_filename.txt /Volumes/DigitalProjects/uo-athletics/
-Work/All2upload_2015-01-09/All2upload/]
-
-notes regarding the arguments: The first path includes the metadata
-file. eg /Users/lib-uberscan/uo-ath_jcs/uo-athletics_filename.txt The second path
-is somewhat optional; if not included, the bagging script will generate
-the bags without the images. The third path is optional; default
-location for the bags is in cdm2bag-master/bags. The script will
-automatically generate a top directory named after the collection (eg
-uo-athletics), and then write the bags to that directory.
-
-Rename or move this directory (eg uo-athletics_01) before
-running additional bags, or the script will err.
-
-After bagging look at bags make sure everything looks ok.
-
-Important: Move the cpds into a separate folder in bags. Tar/transfer/untar/set permissions for the children first then the cpds.
-
-navigate to main bags directory and tar the bags: 
-tar -cvzf dirname.tar.gz dirname 
-[Example: tar -cvzf uo-athletics_01.tar.gz uo-athletics_01]
-
-transfer to lib-hydra1.library.oregonstate.edu:
-scp tarname.tar.gz yourname@lib-hydra1.library.oregonstate.edu:/data1/batch/
-
-ssh into lib-hydra1:
-ssh yourname@lib-hydra1.library.oregonstate.edu 
-cd /data1/batch 
-ls 
-tar -xf tarname.tar.gz 
-
-check permissions (directories should be 775, files should be 664) [Example: ls -l uo-athletics_01]
-chmod 775 maindir [Example: chmod 775 uo-athletics_01]
-chmod 775 maindir/*  [Example: chmod 775 uo-athletics_01/*]
-chmod 775 maindir/*/data  [Example: chmod 775 uo-athletics_01/*/data]
-chmod 664 maindir/*/*.txt  [Example: chmod 664 uo-athletics_01/*/*.txt]
-chmod 664 maindir/*/*.nt  [Example: chmod 664 uo-athletics_01/*/*.nt]
-chmod 664 maindir/*/data/* [Example: chmod 664 uo-athletics_01/*/data/*]
-
-Repeat for the cpds. Ingest the children first then the cpds. Review the children first then the cpds.
+Notes regarding the dmrec number: this number must be unique within a collection.

@@ -1,22 +1,51 @@
-Instructions for using tdv2bag
+Instructions for using file2bag and related scripts
 
-create mapping if necessary in f2b.yml. The order of the predicates must follow the column order from the spreadsheet. It is important to follow the format exactly, including indents and spacing, otherwise the script will fail. 
+throughout these instructions, "collname" refers to a string label you give to the coll you're working on. For ease of use, make collnames short, easy to type.
 
-save spreadsheet as a tab-delimited txt file, the filename must begin with the coll name as it appears in the .yml, separate this coll name from the rest of the name with an underscore.
-For example uo-athletics_2006-10.txt
+Mapping and Metadata files
+create mapping in a .yml file (rename and add to f2b.yml).
+Note the use of the collname as a key
+Order of the predicates must follow the column order from the metadata spreadsheet! 
+Follow the f2b.yml format exactly, including indents and spacing.
 
-make sure the text file has encoding UTF-8 and unix line-endings
+map_verify.rb checks that the namespaces used in the mapping are defined at the top.
+to run, type: ruby map_verify.rb path-to-yml collname
+eg: ruby map_verify f2b.yml uo-athletics
 
-open a terminal, cd to file2bag
-./file2bag -s -m f2b.yml path-to-text.txt path-to-images-dir path-to-bags
+save metadata spreadsheet as a tab-delimited .txt file
+filename must begin with collname followed by underscore
+eg: uo-athletics_2006-10.txt
+metadata text file must have encoding UTF-8 and unix line-endings
+
+check_urls.rb checks that uris used as terms are known vocabs and correctly formatted.
+(Note, it doesn't verify that they work)
+to run, type: ruby check_urls.rb path-to-text
+eg: ruby check_urls.rb uo-athletics_2018-10.txt
+Urls are checked against a master list (see urls.yml in this directory). 
+If a url is incorrectly flagged, the master list may need to be edited. 
+Urls which are present as strings will be flagged and can be ignored.
+
+to run bags:
+./file2bag -s -m path-to-yml path-to-text path-to-content-dir path-to-bags
 
 notes regarding the arguments: 
-The first path is the text file. 
-The second path is somewhat optional; if not included, the bagging script will generate the bags without the images.
-The third path is optional; default location for the bags is in file2bag/bags. The script will automatically generate a top directory named after the collection (eg uo-athletics), and then write the bags to that directory. Rename or move this directory (eg uo-athletics-WBB2014-01-15) before running additional bags, or the script will err.
+path-to-yml refers to the mapping yml file
+path-to-text refers to the metadata text file
+path-to-content-dir refers to the directory containing the images, pdfs, etc.
+The bags path is optional; default location for the bags is in file2bag/bags. 
+a directory with collname will automatically be created, bags will be located inside
+modify the directory name to make it more distinguishable (referred to below as collbagname)
 
 After bagging: 
-tar, transfer to lib-hydra1.library.oregonstate.edu:/data1/batch, untar
-check permissions (directories should be 775, files should be 664)
-go into oregondigital.org/bulk_tasks, find the dir you uploaded (eg uo-athletics-WBB2014-01-15) and click ingest.
+
+tar -cvzf collbagname.tar.gz collbagname
+scp collbagname.tar.gz lib-hydra1.library.oregonstate.edu:/data1/batch
+ssh yourname@lib-hydra1.library.oregonstate.edu
+cd /data1/batch
+tar -xf collbagname.tar.gz
+cd collbagname
+chmod 755 $(find . -type d)
+chmod 644 $(find . -type f)
+
+go into oregondigital.org/bulk_tasks, find collbagname and click ingest.
 
