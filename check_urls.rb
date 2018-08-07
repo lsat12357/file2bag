@@ -1,4 +1,4 @@
-
+#encoding: utf-8
 require 'yaml'
 
 def validate val
@@ -32,7 +32,7 @@ end
 
 
 @urls = YAML.load_file("urls.yml")
-File.readlines(ARGV[0]).each do |line|
+File.readlines(ARGV[0], :encoding => "UTF-8").each do |line|
   arr = line.split(Regexp.new("[|\t]"))
   arr.each do |val|
     validate val unless( (!val.include? "http") && ( !val.include? "\"") )
