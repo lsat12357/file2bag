@@ -32,63 +32,43 @@ URLSTRING = [:has_FindingAid,:citation] #exceptions to urls being added as uris
 
 def create_graphs(file, collection)
   graphs = []
-
-  subject = "http://example.org/ns/"
-  counter = 0 #for subject placeholder
+  subject_base = "http://example.org/ns/"
   dmrec = ""
   begin
-    File.readlines(file, :encoding => "UTF-8").each do |line|
+    File.readlines(file, :encoding => "UTF-8").each_with_index do |line, line_counter|
       graph = RDF::Graph.new
-
-      arr = line.strip.split("\t")
-      if arr.empty?
-        break
+      objects = line.strip.split("\t")
+      break unless !objects.empty?
+      if @collection_mappings.first == "dct:replaces"
+        subject = subject_base + objects.first
+        objects[0] = "http://oregondigital.org/u?/#{collection}/#{objects.first}"
+      else
+        subject = subject_base + line_counter.to_s
       end
-      counter2 = 0 #to iterate through the predicates
-      arr.each do |thing|
-        arr2 = thing.split("|")
-        if counter2 == @collection_mappings.length
-          puts "warning, mismatch btwn desc.txt and predicate list at line #{{counter}}"
-        end
-        if @collection_mappings[counter2] == "dmrec" #don't make a triple, just store
-          dmrec = thing
-        else
-          arr3 = @collection_mappings[counter2].split(":")
-
-          arr2.each do |item|
-            predicate = @mappings['namespaces'][arr3[0]] + arr3[1]
-
-            if item.include?("http") && !URLSTRING.include?(arr3[1].to_sym)
-              graph << RDF::Statement(RDF::URI(subject + counter.to_s), RDF::URI(predicate), RDF::URI(item.strip))
-            else
-              graph << RDF::Statement(RDF::URI(subject + counter.to_s), RDF::URI(predicate), RDF::Literal(item.strip))
-            end #if
-          end #items of a given predicate
-        end #if dmrec
-        counter2 += 1
-      end #do thing
-      counter += 1
-      if !dmrec.empty?
-        graph << RDF::Statement(RDF::URI(subject + dmrec), RDF::DC.replaces, RDF::URI("http://oregondigital.org/u?/#{collection},#{dmrec}"))
-        graph = set_subject(graph, RDF::URI(subject + dmrec))
+      objects.each_with_index do |obj, pred_counter|
+        obj_arr = obj.split("|")
+        raise "mismatch btwn no. of fields in metadata and predicate list at #{line_counter}" unless pred_counter < @collection_mappings.length
+        pred_arr = @collection_mappings[pred_counter].split(":")
+        graph = add_statements(graph, subject, pred_arr, obj_arr)
       end
       graphs << graph
     end #each line
-
     graphs
   rescue StandardError => e
-    puts "Something went wrong at line #{{counter}}"
     puts e.message
     puts e.backtrace.inspect
   end
 end #def
 
-def set_subject(graph, subject)
-  graph.each_statement do |statement|
-    #if statement.subject.node?
-      graph.delete(statement)
-      graph << RDF::Statement.new(subject, statement.predicate, statement.object)
-    #end
+#adds the triples for one field
+def add_statements(graph, subject, pred_arr, obj_arr)
+  obj_arr.each do |item|
+    predicate = @mappings['namespaces'][pred_arr[0]] + pred_arr[1]
+    if item.include?("http") && !URLSTRING.include?(pred_arr[1].to_sym)
+      graph << RDF::Statement(RDF::URI(subject), RDF::URI(predicate), RDF::URI(item.strip))
+    else
+      graph << RDF::Statement(RDF::URI(subject), RDF::URI(predicate), RDF::Literal(item.strip))
+    end
   end
   graph
 end
@@ -115,7 +95,6 @@ def add_content_file(graph, bag)
       pattern [:subject, RDF::URI('http://opaquenamespace.org/ns/full'), :full]
     end
     results = query.execute(graph)
-
 
     if results.empty?
       puts 'no full'
