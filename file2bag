@@ -41,7 +41,7 @@ def create_graphs(file, collection)
       break unless !objects.empty?
       if @collection_mappings.first == "dct:replaces"
         subject = subject_base + objects.first
-        objects[0] = "http://oregondigital.org/u?/#{collection}/#{objects.first}"
+        objects[0] = "http://oregondigital.org/u?/#{collection},#{objects.first}"
       else
         subject = subject_base + line_counter.to_s
       end
