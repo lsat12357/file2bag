@@ -26,7 +26,7 @@ namespaces:
 
 mappings:
   test-cpd:
-  - dmrec
+  - dct:replaces
   - oregon:full
   - dct:identifier
   - dct:title

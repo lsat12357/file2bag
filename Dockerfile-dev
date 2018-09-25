@@ -5,7 +5,7 @@ FROM ubuntu:12.04
 #if more directories need to be mapped, eg dirs with images, add additional: -v path-to-dir:/home/dsc-dev/dir
 
 RUN apt-get update
-RUN apt-get install -y  git sudo curl wget automake build-essential cmake pkg-config libssl-dev libreadline-dev
+RUN apt-get install -y  git sudo curl wget automake build-essential cmake pkg-config libssl-dev libreadline-dev php5
 
 RUN git clone https://github.com/sstephenson/rbenv.git /usr/local/rbenv
 ENV PATH /usr/local/rbenv/shims:/usr/local/rbenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
