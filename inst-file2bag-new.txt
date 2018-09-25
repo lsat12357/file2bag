@@ -1,0 +1,103 @@
+Instructions for using file2bag and related scripts
+
+Log into lib-dscdev
+Open Finder
+In lib-dscdev, go to file2bag-new
+Open inst-file2bag-new.txt
+
+Throughout these instructions, "collname" refers to a string label you give to the coll you're working on. Ask Julia and Sarah for the collname that you are uploading. 
+
+Julia and Sarah:
+[Mapping and metadata files]:
+Julia and Sarah will create mapping in a .yml file and save in file2bag-new/file2bag2:
+- Note the use of the collname as a key
+- Order of the predicates must follow the column order from the metadata spreadsheet! 
+- Follow the f2b.yml format exactly, including indents and spacing.
+- map_verify.rb checks that the namespaces used in the mapping are defined at the top. To run, enter command: ruby map_verify.rb path-to-yml collname eg: ruby map_verify f2b.yml uo-athletics
+
+Julia and Sarah will save metadata spreadsheet as a tab-delimited .txt file:
+- Filename must begin with collname followed by underscore eg: uo-athletics_2006-10.txt
+- Metadata text file must have encoding UTF-8 and unix line-endings
+- Delete all "
+- Delete top row (column headers) and any extra bottom rows
+- Save file in file2bag-new/file2bag2
+
+
+
+Student:
+[Launch Docker and map drives]:
+Open Docker in launchpad (whale icon)
+Open terminal window by selecting terminal icon in bottom dock.
+Change directory by entering command: cd file2bag-new/file2bag2
+Enter command: docker build --rm -t file2bag-container -f Dockerfile-dev .
+- This step does not need to be repeated after the file2bag-container is created, so long as it has not been deleted
+Enter command: docker run -v ~/file2bag-new/file2bag2:/home/dsc-dev/file2bag-new/file2bag2 -v /Volumes/DigitalProjects/Metadata:/home/dsc-dev/Volumes/DigitalProjects/Metadata -it file2bag-container
+
+
+[Check URIs in text file]:
+Navigate to the file2bag-new/file2bag2 folder
+- Find out where you are by using the ls command to list what is in your current directory. Use command cd .. to go up a directory, then command ls until you find the top of the container with the Volumes and file2bag-new directories. Then use command cd file2bag-new/file2bag2 
+To run, enter command: ruby check_urls.rb path-to-text 
+- eg: ruby check_urls.rb uo-athletics_2018-10.txt
+- This command checks that uris used as terms are known vocabs and correctly formatted. (Note, it doesn't verify that they work)
+- Urls are checked against a master list (see urls.yml in this directory). 
+- If a url is incorrectly flagged, the master list may need to be edited. Notify Julia and Sarah.
+- Urls which are present as strings will be flagged and can be ignored.
+- Tip: Paths to directories or files can be entered in the terminal window by dragging and dropping that file or directory into the window as you are writing a command
+
+
+[Create compound object parent items (cpds)]:
+- Note, this procedure is only used when cpds are necessary. Please verify that the YAML mapping file has dct:replaces in the first position (not the outdated dmrec) and that the data file has the dct:replaces integer in the first position, followed by the oregon:full (filename) and dct:title (title) columns.
+From the file2bag2 folder, enter command into the terminal window: php print_cpds.php path-to-text
+- eg: php print_cpds.php gb-warner_Box80
+Move the resulting .cpd file into the directory with the rest of the digital assets to be uploaded
+
+
+[Create bags]:
+Change directory by entering command (if not already there): cd file2bag-new/file2bag2/
+Enter command: ./file2bag -s -m path-to-yml path-to-text path-to-content-dir path-to-bags 
+- eg: ./file2bag -s -m tdv_gb-warner.yml gb-warner_Box80.txt /home/dsc-dev/Volumes/DigitalProjects/Metadata/GBWarnerLanternSlides/Work/Box80/
+- Tip: Path to content means path to the images or other digital items that are most likely on the mapped server
+- Notes regarding the arguments: 
+	- path-to-yml refers to the mapping yml file
+	- path-to-text refers to the metadata text file
+	- path-to-content-dir refers to the directory containing the images, pdfs, etc.
+	- The bags path is optional; default location for the bags is in file2bag/bags. A directory named collname will automatically be created with the bags located inside.
+	- Edit the directory name in the Finder to make it more distinguishable (referred to below as collbagname)
+		- eg: gb-warner becomes gb-warner_Box80
+Check that all bags have content by entering command sh checkfiles.sh bags/yourbatchname
+	- eg: sh checkfiles.sh bags/gb-warner_Box80
+
+
+[Tar bags]: 
+In the Terminal, enter command: cd bags
+Enter command: tar -cvzf collbagname.tar.gz collbagname 
+- eg: tar -cvzf gb-warner_Box80.tar.gz gb-warner_Box80
+
+
+[Upload bags to OSU server]:
+When tar is finished, enter command: scp collbagname.tar.gz yourname@lib-hydra1.library.oregonstate.edu:/data1/batch
+- yourname is the unique user name allowing access to the server
+
+
+[Untar bags]:
+When upload is finished, enter command: ssh yourname@lib-hydra1.library.oregonstate.edu
+Enter your unique password
+Enter command: cd /data1/batch
+Enter command: tar -xf collbagname.tar.gz
+- eg: tar -xf gb-warner_Box 80.tar.gz
+
+
+[Change file permissions]:
+Enter command: cd collbagname
+- eg: cd gb-warner_Box80
+Enter command: chmod 755 $(find . -type d)
+Enter command: chmod 644 $(find . -type f)
+Enter command: ls -l
+Check that permissions for the collbagname are drwxrw-sr-x
+To disconnect, enter command: exit
+
+
+[Ingest items]:
+Go into oregondigital.org/bulk_tasks, find collbagname and click Ingest button.
+
