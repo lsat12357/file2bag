@@ -32,57 +32,43 @@ URLSTRING = [:has_FindingAid,:citation] #exceptions to urls being added as uris
 
 def create_graphs(file, collection)
   graphs = []
-  
-  subject = "http://example.org/ns/"
-  counter = 0 #for subject placeholder
+  subject_base = "http://example.org/ns/"
   dmrec = ""
-  File.readlines(file).each do |line|
-    graph = RDF::Graph.new
-    
-    arr = line.strip.split("\t")
-        if arr.empty? 
-          break
-	    end
-		counter2 = 0 #to iterate through the predicates
-		arr.each do |thing|
-		  	arr2 = thing.split("|")
-		  	if counter2 == @collection_mappings.length
-		  		puts "warning, mismatch btwn desc.txt and predicate list"
-		  	end
-		  	if @collection_mappings[counter2] == "dmrec" #don't make a triple, just store
-		  	    dmrec = thing
-		  	else
-		  	    arr3 = @collection_mappings[counter2].split(":")
-		  	
-		  	    arr2.each do |item|
-		  	       predicate = @mappings['namespaces'][arr3[0]] + arr3[1]
-		  	  
-		 	       if item.include?("http") && !URLSTRING.include?(arr3[1].to_sym)
-				       graph << RDF::Statement(RDF::URI(subject + counter.to_s), RDF::URI(predicate), RDF::URI(item.strip))
-		  	       else 
-		   		       graph << RDF::Statement(RDF::URI(subject + counter.to_s), RDF::URI(predicate), RDF::Literal(item.strip))
-		  	       end #if
-		  	    end #items of a given predicate
-		  	  end #if dmrec
-		  	counter2 += 1
-		 end #do thing
-		 counter += 1
-		 if !dmrec.empty?
-		     graph << RDF::Statement(RDF::URI(subject + dmrec), RDF::DC.replaces, RDF::URI("http://oregondigital.org/u?/#{collection},#{dmrec}"))
-		     graph = set_subject(graph, RDF::URI(subject + dmrec))
-		 end
-		 graphs << graph
+  begin
+    File.readlines(file, :encoding => "UTF-8").each_with_index do |line, line_counter|
+      graph = RDF::Graph.new
+      objects = line.strip.split("\t")
+      break unless !objects.empty?
+      if @collection_mappings.first == "dct:replaces"
+        subject = subject_base + objects.first
+        objects[0] = "http://oregondigital.org/u?/#{collection},#{objects.first}"
+      else
+        subject = subject_base + line_counter.to_s
+      end
+      objects.each_with_index do |obj, pred_counter|
+        obj_arr = obj.split("|")
+        raise "mismatch btwn no. of fields in metadata and predicate list at #{line_counter}" unless pred_counter < @collection_mappings.length
+        pred_arr = @collection_mappings[pred_counter].split(":")
+        graph = add_statements(graph, subject, pred_arr, obj_arr)
+      end
+      graphs << graph
     end #each line
-  
-  graphs
+    graphs
+  rescue StandardError => e
+    puts e.message
+    puts e.backtrace.inspect
+  end
 end #def
 
-def set_subject(graph, subject)
-  graph.each_statement do |statement|
-    #if statement.subject.node?
-      graph.delete(statement)
-      graph << RDF::Statement.new(subject, statement.predicate, statement.object)
-    #end
+#adds the triples for one field
+def add_statements(graph, subject, pred_arr, obj_arr)
+  obj_arr.each do |item|
+    predicate = @mappings['namespaces'][pred_arr[0]] + pred_arr[1]
+    if item.include?("http") && !URLSTRING.include?(pred_arr[1].to_sym)
+      graph << RDF::Statement(RDF::URI(subject), RDF::URI(predicate), RDF::URI(item.strip))
+    else
+      graph << RDF::Statement(RDF::URI(subject), RDF::URI(predicate), RDF::Literal(item.strip))
+    end
   end
   graph
 end
@@ -95,7 +81,7 @@ def write_desc_metadata(graph, bag)
     #puts results.first[:subject]
     if !results.empty?
       graph.delete([results.first[:subject], RDF::URI('http://opaquenamespace.org/ns/full'), results.first[:full]] )
-    end  
+    end
   RDF::Writer.open("descMetadata.nt", :format => :ntriples) do |writer|
     writer << graph
   end
@@ -109,14 +95,13 @@ def add_content_file(graph, bag)
       pattern [:subject, RDF::URI('http://opaquenamespace.org/ns/full'), :full]
     end
     results = query.execute(graph)
-    
-    
+
     if results.empty?
       puts 'no full'
       return nil
     else fname = Pathname(results.first[:full].to_s).basename.to_s unless fname #else if !fname, then fname = Pathname etc.
     fname = fname.split(/\\/).last
-    
+
     end
     #file = File.join(dir, '', fname.to_s.split('\\')[-1].gsub(/^1_/, ''))  #
     file = File.join(@opts['CONTENTDIR'], '', fname.to_s.split('\\')[-1].gsub(/^1_/, ''))  #
@@ -135,32 +120,32 @@ def make_bag(dir, graph, subject, collection)
   load_compound_objects(collection, graph, subject) #--------------sticking this in here, LS
   add_content_file(graph, bag)
   write_desc_metadata(graph, bag)
-  
+
   bag.tagmanifest!
   bag.manifest!
 end
 
 def make_coll_bags(source, target, collection, *args)
   #file = File.join(dir, collection, 'desc.txt') #this is the tab delineated file
-  
+
   col_dir = FileUtils.mkdir_p(File.join(target, collection))#make the subdir to receive the bags
   @collection_mappings = @mappings['mappings'][collection]
-  
+
   graphs = create_graphs(source, collection) #was file
-  
+
   if @missing_fields.empty? or @opts['--skip']
     puts 'making bags'
-    
+
     graphs.each do |graph|
       subject = ''
       graph.each_statement do |s|
-   
+
         if s.subject.start_with? 'http://example.org/ns/'
           subject = s.subject
           #break
         end #if
       end #do s
-      make_bag(col_dir, graph, subject, collection)   
+      make_bag(col_dir, graph, subject, collection)
     end #do graph
   else
     puts "Missing fields, not writing bags for #{collection}. Add fields to mapping.yml, or use --skip flag."
@@ -168,12 +153,12 @@ def make_coll_bags(source, target, collection, *args)
 end #def
 
 def make_all_bags(source, target)
-  target = FileUtils.mkdir_p(target)	#make the top level receiving directory, default is cdm2bag-master/bags
- # Dir.foreach(dir) do |collection| 
+  target = FileUtils.mkdir_p(target)#make the top level receiving directory, default is cdm2bag-master/bags
+ # Dir.foreach(dir) do |collection|
     #next if collection == '.' or collection == '..'
     fname = source.split("/").last
     collection = fname.split("_").first
-    make_coll_bags(source, target, collection)	
+    make_coll_bags(source, target, collection)
   #end
 end
 
@@ -189,7 +174,7 @@ begin
   @skip = ['unknown', 'n/a']
 
   @log = Logger.new('logfile.log')
-	
+
   make_all_bags(@opts['SOURCE'], @opts['TARGET'] || 'bags')#target is the dir to receive bags #source is the pathtosourcefile
   puts @missing_fields unless @missing_fields.empty?
 rescue Docopt::Exit => e
